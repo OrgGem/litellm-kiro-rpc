@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "litellm-kiro-rpc"
+version = "0.1.0.dev0"
+description = "Restricted Kiro CLI sessions behind a LiteLLM provider and local API"
+requires-python = ">=3.11,<3.14"
+dependencies = ["litellm==1.109.0", "uvicorn==0.54.0"]
+
+[project.scripts]
+kiro-rpc = "litellm_kiro_rpc.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-asyncio>=1,<2", "ruff>=0.14,<1", "build>=1,<2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/litellm_kiro_rpc"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
