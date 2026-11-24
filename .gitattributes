@@ -1,0 +1,2 @@
+# Frozen contract hashes depend on exact LF bytes on every platform.
+src/litellm_kiro_rpc/contract_v0_1/* text eol=lf

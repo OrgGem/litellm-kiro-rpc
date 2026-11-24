@@ -1,0 +1,9 @@
+{
+  "contract_version": "0.1",
+  "contract_hash": "6bd9b3983a27890913ac9bf18a3dade5ac8cbc3cbe5d0630f70f04f564544097",
+  "hash_input": "schema.json + LF + SEMANTICS.md",
+  "files": {
+    "schema.json": "82abd69741dfded7ad0a219d16ec4eeba0e1a89f332b15a49e6ac5116dd7eeb5",
+    "SEMANTICS.md": "b00a78d4c8ed1f8716a5afac27f2264976ca936926d579ff18b17fab495cd483"
+  }
+}

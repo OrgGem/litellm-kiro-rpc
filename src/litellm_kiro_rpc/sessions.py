@@ -127,7 +127,7 @@ class SessionPool:
         self.config, self.factory = config, factory
         self.sessions = {}
         self.condition = asyncio.Condition()
-        self.slots = asyncio.Semaphore(config.concurrency)
+        self.active = 0
         self.pending = 0
         self.closed = False
         self.reaper = None
@@ -157,6 +157,9 @@ class SessionPool:
                 if actor and actor.busy:
                     await self.condition.wait()
                     continue
+                if self.active >= self.config.concurrency:
+                    await self.condition.wait()
+                    continue
                 if actor:
                     reusable = (
                         not actor.task.done()
@@ -167,9 +170,15 @@ class SessionPool:
                     )
                     if reusable:
                         actor.busy = True
+                        self.active += 1
                         return actor, request.delta()
-                    await actor.stop()
-                    del self.sessions[key]
+                    try:
+                        await actor.stop()
+                    finally:
+                        if self.sessions.get(key) is actor:
+                            del self.sessions[key]
+                    if self.closed:
+                        raise GatewayError("shutting_down", 503)
                 if len(self.sessions) >= self.config.max_sessions:
                     idle = [
                         (a.used, k, a) for k, a in self.sessions.items() if not a.busy
@@ -178,14 +187,20 @@ class SessionPool:
                         await self.condition.wait()
                         continue
                     _, old_key, old_actor = min(idle)
-                    await old_actor.stop()
-                    del self.sessions[old_key]
+                    try:
+                        await old_actor.stop()
+                    finally:
+                        if self.sessions.get(old_key) is old_actor:
+                            del self.sessions[old_key]
+                    if self.closed:
+                        raise GatewayError("shutting_down", 503)
                 actor = Actor(
                     self.factory(self.config.models[request.model], request.system),
                     self.config,
                 )
                 actor.model = (request.model, self.config.models[request.model])
                 self.sessions[key] = actor
+                self.active += 1
                 return actor, request.bootstrap()
 
     @asynccontextmanager
@@ -201,32 +216,44 @@ class SessionPool:
         actor = turn = None
         try:
             async with asyncio.timeout(self.config.timeout):
-                async with self.slots:
-                    actor, prompt = await self.acquire(request, key)
-                    await asyncio.shield(actor.ready)
-                    turn = Turn(actor, prompt, self.config)
-                    yield turn
+                actor, prompt = await self.acquire(request, key)
+                await asyncio.shield(actor.ready)
+                turn = Turn(actor, prompt, self.config)
+                yield turn
         except TimeoutError:
             raise GatewayError("deadline_exceeded", 504) from None
         finally:
             if actor:
-                async with self.condition:
-                    if (
-                        turn
-                        and turn.committed
-                        and request.conversation
-                        and not self.closed
-                    ):
-                        actor.history = fingerprints(
-                            (*request.messages, ("assistant", "".join(turn.text)))
-                        )
-                        actor.busy = False
-                        actor.used = time.monotonic()
-                    else:
-                        await actor.stop()
-                        if self.sessions.get(key) is actor:
-                            del self.sessions[key]
-                    self.condition.notify_all()
+
+                async def release():
+                    async with self.condition:
+                        self.active -= 1
+                        if (
+                            turn
+                            and turn.committed
+                            and request.conversation
+                            and not self.closed
+                        ):
+                            actor.history = fingerprints(
+                                (*request.messages, ("assistant", "".join(turn.text)))
+                            )
+                            actor.busy = False
+                            actor.used = time.monotonic()
+                            self.condition.notify_all()
+                        else:
+                            try:
+                                await actor.stop()
+                            finally:
+                                if self.sessions.get(key) is actor:
+                                    del self.sessions[key]
+                                self.condition.notify_all()
+
+                cleanup = asyncio.create_task(release())
+                try:
+                    await asyncio.shield(cleanup)
+                except asyncio.CancelledError:
+                    await cleanup
+                    raise
             self.pending -= 1
 
     async def close(self):

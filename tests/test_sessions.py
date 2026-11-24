@@ -198,3 +198,53 @@ async def test_slash_leading_text_is_preserved_as_literal_delta():
         assert '"content": "/home/report"' in response
     finally:
         await pool.close()
+
+
+async def test_waiting_same_conversation_does_not_hold_concurrency_slot():
+    a1_entered, release_a1 = asyncio.Event(), asyncio.Event()
+
+    class Gated(Agent):
+        async def stream(self, prompt):
+            self.turns += 1
+            if "a1" in prompt and self.turns == 1:
+                a1_entered.set()
+                await release_a1.wait()
+            yield Event(text=f"turn-{self.turns}:{prompt}")
+            yield Event(done=True)
+
+    pool = SessionPool(Config(concurrency=2, max_sessions=4), Gated)
+    try:
+        a1 = asyncio.create_task(
+            answer(pool, [{"role": "user", "content": "a1"}], "conv-a")
+        )
+        await a1_entered.wait()
+        bootstrap_a1 = Request.parse(
+            {"model": "kiro-default", "messages": [{"role": "user", "content": "a1"}]},
+            "conv-a",
+            pool.config,
+        ).bootstrap()
+        a2 = asyncio.create_task(
+            answer(
+                pool,
+                [
+                    {"role": "user", "content": "a1"},
+                    {"role": "assistant", "content": "turn-1:" + bootstrap_a1},
+                    {"role": "user", "content": "a2"},
+                ],
+                "conv-a",
+            )
+        )
+        await asyncio.sleep(0.03)
+        b_res = await asyncio.wait_for(
+            answer(pool, [{"role": "user", "content": "b1"}], "conv-b"),
+            timeout=0.5,
+        )
+        assert b_res.startswith("turn-1:")
+        release_a1.set()
+        _, a2_res = await asyncio.gather(a1, a2)
+        assert a2_res == "turn-2:a2"
+    finally:
+        release_a1.set()
+        await pool.close()
+        await asyncio.gather(a1, a2, return_exceptions=True)
+

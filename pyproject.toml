@@ -7,7 +7,7 @@ name = "litellm-kiro-rpc"
 version = "0.1.0.dev0"
 description = "Restricted Kiro CLI sessions behind a LiteLLM provider and local API"
 requires-python = ">=3.11,<3.14"
-dependencies = ["litellm==1.109.0", "uvicorn==0.54.0"]
+dependencies = ["litellm==1.109.0", "uvicorn==0.54.0", "jsonschema>=4.20,<5"]
 
 [project.scripts]
 kiro-rpc = "litellm_kiro_rpc.cli:main"

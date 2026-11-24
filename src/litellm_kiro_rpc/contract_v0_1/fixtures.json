@@ -1,0 +1,346 @@
+[
+  {
+    "document": {
+      "dto": "UsageObservation",
+      "value": {
+        "cache_read_tokens": 2,
+        "cache_write_tokens": null,
+        "completeness": "complete",
+        "coverage": [
+          "step-1"
+        ],
+        "epoch": "epoch-1",
+        "event_id": "usage-1",
+        "final": true,
+        "input_tokens": 10,
+        "invocation_id": "inv-1",
+        "output_tokens": 3,
+        "reasoning_tokens": 1,
+        "scope": "step",
+        "semantics": "snapshot",
+        "sequence": 1,
+        "source": "fixture",
+        "step_id": "step-1",
+        "unit": "tokens"
+      }
+    },
+    "name": "native-step-usage",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "UsageObservation",
+      "value": {
+        "cache_read_tokens": 2,
+        "cache_write_tokens": null,
+        "completeness": "complete",
+        "coverage": [
+          "step-1"
+        ],
+        "epoch": "epoch-1",
+        "event_id": "usage-1",
+        "final": true,
+        "input_tokens": 10,
+        "invocation_id": "inv-1",
+        "output_tokens": 3,
+        "reasoning_tokens": 1,
+        "scope": "step",
+        "semantics": "snapshot",
+        "sequence": 1,
+        "source": "fixture",
+        "step_id": "step-1",
+        "unit": "credits"
+      }
+    },
+    "name": "context-units-not-tokens",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "UsageObservation",
+      "value": {
+        "cache_read_tokens": null,
+        "cache_write_tokens": null,
+        "completeness": "unknown",
+        "coverage": [
+          "step-1"
+        ],
+        "epoch": "epoch-1",
+        "event_id": "usage-1",
+        "final": true,
+        "input_tokens": null,
+        "invocation_id": "inv-1",
+        "output_tokens": null,
+        "reasoning_tokens": null,
+        "scope": "step",
+        "semantics": "snapshot",
+        "sequence": 1,
+        "source": "fixture",
+        "step_id": "step-1",
+        "unit": "tokens"
+      }
+    },
+    "name": "unknown-usage-is-null",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "UsageObservation",
+      "value": {
+        "cache_read_tokens": 2,
+        "cache_write_tokens": null,
+        "completeness": "complete",
+        "coverage": [
+          "step-1"
+        ],
+        "epoch": "epoch-1",
+        "event_id": "usage-1",
+        "final": true,
+        "input_tokens": -1,
+        "invocation_id": "inv-1",
+        "output_tokens": 3,
+        "reasoning_tokens": 1,
+        "scope": "step",
+        "semantics": "snapshot",
+        "sequence": 1,
+        "source": "fixture",
+        "step_id": "step-1",
+        "unit": "tokens"
+      }
+    },
+    "name": "no-negative-token-count",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "UsageObservation",
+      "value": {
+        "cache_read_tokens": 2,
+        "cache_write_tokens": null,
+        "completeness": "complete",
+        "coverage": [
+          "step-1"
+        ],
+        "epoch": "epoch-1",
+        "event_id": "usage-1",
+        "final": true,
+        "input_tokens": true,
+        "invocation_id": "inv-1",
+        "output_tokens": 3,
+        "reasoning_tokens": 1,
+        "scope": "step",
+        "semantics": "snapshot",
+        "sequence": 1,
+        "source": "fixture",
+        "step_id": "step-1",
+        "unit": "tokens"
+      }
+    },
+    "name": "no-boolean-token-count",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "UsageObservation",
+      "value": {
+        "api_key": "forbidden",
+        "cache_read_tokens": 2,
+        "cache_write_tokens": null,
+        "completeness": "complete",
+        "coverage": [
+          "step-1"
+        ],
+        "epoch": "epoch-1",
+        "event_id": "usage-1",
+        "final": true,
+        "input_tokens": 10,
+        "invocation_id": "inv-1",
+        "output_tokens": 3,
+        "reasoning_tokens": 1,
+        "scope": "step",
+        "semantics": "snapshot",
+        "sequence": 1,
+        "source": "fixture",
+        "step_id": "step-1",
+        "unit": "tokens"
+      }
+    },
+    "name": "no-secrets-in-usage",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "ToolCall",
+      "value": {
+        "function": {
+          "arguments": "{\"text\":\"hello\"}",
+          "name": "echo"
+        },
+        "id": "call-1",
+        "type": "function"
+      }
+    },
+    "name": "tool-call",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "ToolResults",
+      "value": {
+        "content_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "handoff_id": "handoff-1",
+        "locator": "0000000000000000000000000000000000000000000000000000000000000000",
+        "request_id": "request-2",
+        "results": [
+          {
+            "content": "hello",
+            "native_ref": "native-1",
+            "public_id": "call-1"
+          }
+        ],
+        "round_policy": {
+          "parallel_tool_calls": false,
+          "tool_choice": "auto"
+        }
+      }
+    },
+    "name": "tool-results",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "ReasoningDelta",
+      "value": {
+        "block_id": "block-1",
+        "kind": "summary",
+        "opaque_replay_ref": null,
+        "sequence": 0,
+        "text": "Public provider summary"
+      }
+    },
+    "name": "public-reasoning-summary",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "ReasoningDelta",
+      "value": {
+        "block_id": "block-1",
+        "kind": "hidden",
+        "opaque_replay_ref": null,
+        "sequence": 0,
+        "text": "Public provider summary"
+      }
+    },
+    "name": "no-raw-hidden-reasoning",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "Terminal",
+      "value": {
+        "finish_reason": "tool_calls",
+        "kind": "http_handoff",
+        "usage_completeness": "partial"
+      }
+    },
+    "name": "tool-handoff",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "ToolBatch",
+      "value": {
+        "calls": [],
+        "expires_at": 120,
+        "handoff_id": "handoff-1",
+        "toolset_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "transcript_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "name": "empty-batch-invalid",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "AdapterEvent",
+      "value": {
+        "invocation_id": "inv-1",
+        "payload": {
+          "text": "hello"
+        },
+        "sequence": 1,
+        "type": "text_delta"
+      }
+    },
+    "name": "native-text-event",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "AdapterEvent",
+      "value": {
+        "invocation_id": "inv-1",
+        "payload": {},
+        "sequence": 1,
+        "type": "permission_granted"
+      }
+    },
+    "name": "permission-is-not-toolcall",
+    "valid": false
+  },
+  {
+    "document": {
+      "dto": "AdapterEvent",
+      "value": {
+        "invocation_id": "inv-1",
+        "payload": {
+          "arguments": {
+            "text": "hello"
+          },
+          "index": 0,
+          "name": "echo",
+          "native_ref": "native-1"
+        },
+        "sequence": 2,
+        "type": "tool_call_ready"
+      }
+    },
+    "name": "native-call-ready",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "AdapterEvent",
+      "value": {
+        "invocation_id": "inv-1",
+        "payload": {
+          "native_refs": [
+            "native-1"
+          ]
+        },
+        "sequence": 3,
+        "type": "tool_batch_ready"
+      }
+    },
+    "name": "native-batch-boundary",
+    "valid": true
+  },
+  {
+    "document": {
+      "dto": "AdapterEvent",
+      "value": {
+        "invocation_id": "inv-1",
+        "payload": {
+          "finish_reason": "tool_calls",
+          "kind": "http_handoff",
+          "usage_completeness": "partial"
+        },
+        "sequence": 4,
+        "type": "native_turn_ended"
+      }
+    },
+    "name": "native-handoff-not-terminal",
+    "valid": false
+  }
+]

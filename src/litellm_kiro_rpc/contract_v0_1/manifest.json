@@ -1,0 +1,11 @@
+{
+  "contract_hash": "749182d456eb363be2d63b2a98d66d0f1bf203b93d8a16ed4a8bdd90834e5fc1",
+  "contract_version": "0.1",
+  "files": {
+    "SEMANTICS.md": "44a005368bad85725ae3386f03a2f4deb561acc704b6bc237312a5cd937fcebe",
+    "fixtures.json": "d3245f4928827ee68d476ab6dc7930332c911071d0398045855bbeb11c876feb",
+    "schema.json": "6fb0e74980eb93aa1217d8b66517c8bfac446ef458bccfa174899189f6cee543"
+  },
+  "semantics": "See SEMANTICS.md; JSON schema validates structure, conformance validates lifecycle and accounting.",
+  "status": "frozen"
+}
